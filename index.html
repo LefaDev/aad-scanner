@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description"
+    content="Official ticket scanning and gate validation web app for the Africa & African Diaspora Conference (AAD) 2026.">
+  <meta name="theme-color" content="#154a58">
+  <title>AAD Registration Validator · Access Control · AAD 2026</title>
+
+  <!-- PWA Manifest & Favicons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="brand/favicon.png">
+  <link rel="apple-touch-icon" href="brand/icon-192.png">
+
+  <!-- Self-Hosted Stylesheets (Zero build, no external CDN) -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/walkin.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+</head>
+
+<body>
+  <!-- Accessibility Live Region for Screen Readers -->
+  <div id="aria-live-announcer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+  <div class="app-shell">
+    <!-- 1. Announcement Strip -->
+    <aside class="announcement-strip" aria-label="Conference venue and session context">
+      <div class="announcement-text">
+        Johannesburg, South Africa · 26–30 October 2026 · Birchwood Hotel &amp; OR Tambo Conference Centre
+      </div>
+      <div class="announcement-status">
+        <span id="announcement-gate-label" class="gate-badge">DELEGATE REGISTRATION</span>
+        <span class="header-divider" style="height: 16px; margin: 0 4px; background-color: rgba(43,44,38,0.2);"></span>
+        <span id="connection-indicator" class="connection-indicator online">
+          <span class="connection-dot"></span>
+          <span class="connection-text">ONLINE</span>
+        </span>
+      </div>
+    </aside>
+
+    <!-- 2. Sticky Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="brand/aad-logo.png" alt="AAD 2026 Logo" class="header-logo" width="180" height="48">
+        <div class="header-divider"></div>
+        <div class="header-title-block">
+          <span class="header-title">AAD REGISTRATION VALIDATOR</span>
+          <span class="header-subtitle">Access Control · AAD 2026</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span id="header-cloud-chip" class="header-chip" title="Cloud sync status">Local only</span>
+
+        <button type="button" id="sound-toggle-btn" class="icon-btn" aria-label="Toggle audio feedback"
+          title="Audio feedback toggle">
+          <svg class="icon">
+            <use href="assets/icons.svg#icon-volume-2"></use>
+          </svg>
+        </button>
+
+      </div>
+    </header>
+
+    <div class="app-container">
+      <!-- 3. Desktop Sidebar (>=1024px) -->
+      <nav class="app-sidebar" aria-label="Main navigation">
+        <div class="sidebar-top">
+          <!-- Gate Control Plate -->
+          <div class="gate-control-plate">
+            <div class="gate-plate-icon">
+              <svg class="icon" style="width: 26px; height: 26px;">
+                <use href="assets/icons.svg#icon-scan"></use>
+              </svg>
+            </div>
+            <div class="gate-plate-info">
+              <span class="gate-plate-eyebrow">Gate Control</span>
+              <span id="sidebar-gate-name" class="gate-plate-title">Delegate Registration</span>
+            </div>
+          </div>
+
+          <!-- Nav Items -->
+          <div class="sidebar-nav">
+            <button type="button" class="nav-item active" data-target="validator" aria-current="page">
+              <svg class="icon">
+                <use href="assets/icons.svg#icon-scan"></use>
+              </svg>
+              <span>Validator</span>
+            </button>
+            <button type="button" class="nav-item" data-target="log">
+              <svg class="icon">
+                <use href="assets/icons.svg#icon-list"></use>
+              </svg>
+              <span>Scan Log</span>
+            </button>
+            <button type="button" class="nav-item" data-target="walkin">
+              <svg class="icon">
+                <use href="assets/icons.svg#icon-user"></use>
+              </svg>
+              <span>Walk-ins</span>
+            </button>
+            <button type="button" class="nav-item" data-target="reports">
+              <svg class="icon">
+                <use href="assets/icons.svg#icon-chart"></use>
+              </svg>
+              <span>Reports</span>
+            </button>
+            <button type="button" class="nav-item" data-target="settings">
+              <svg class="icon">
+                <use href="assets/icons.svg#icon-settings"></use>
+              </svg>
+              <span>Settings</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button type="button" id="sidebar-export-log-btn" class="btn btn-outline"
+            style="border-color: var(--color-highlight); color: #ffffff; width: 100%;">
+            <svg class="icon">
+              <use href="assets/icons.svg#icon-download"></use>
+            </svg>
+            <span>Export log</span>
+          </button>
+          <div class="sidebar-version">
+            AAD 2026 · Event Registration Tool · v1.4.2
+          </div>
+        </div>
+      </nav>
+
+      <!-- 4. Main Panels -->
+      <main class="app-main">
+        <div class="main-content">
+          <!-- Session Restored Alert Banner -->
+          <!--<div id="session-restored-banner" class="active-event-strip"
+            style="background-color: var(--status-prechecked-bg); border-color: var(--color-accent-warm);" hidden></div> -->
+
+          <!-- ================================================================
+               PANEL 1: VALIDATOR (Hero)
+               ================================================================ -->
+          <section data-panel="validator" class="panel">
+            <!-- Active Event Strip -->
+            <div id="active-event-strip-container" class="active-event-strip">
+              <div class="active-event-text">
+                <strong>Active session:</strong>
+                <span>AAD 2026 · Day 1 (2026-10-26)</span>
+                <span class="chip chip-gold">0 tickets loaded</span>
+                <span class="chip chip-prechecked">Waiting for manifest</span>
+              </div>
+            </div>
+
+            <!-- Scan Card (The Hero) -->
+            <div class="card scan-card">
+              <div class="scan-card-eyebrow">Ticket Validation</div>
+              <h1 class="scan-card-title">Ticket Validator</h1>
+              <p class="scan-card-sub">Point a Zebra scanner at the QR code, or type the ticket code.</p>
+
+              <div class="scan-input-wrapper">
+                <input type="text" id="scan-input" class="scan-input mono" placeholder="Scan QR or enter ticket ID…"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                  aria-label="Scan QR code or enter ticket ID" autofocus>
+                <button type="button" id="scan-submit-btn" class="scan-submit-btn" aria-label="Submit scan">
+                  <svg class="icon" style="width: 24px; height: 24px;">
+                    <use href="assets/icons.svg#icon-search"></use>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="scan-card-footer-row">
+                <div id="scan-indicator" class="scan-status-indicator">
+                  <span class="pulse-dot"></span>
+                  <span>Waiting for scan</span>
+                </div>
+                <button type="button" id="camera-scan-toggle-btn" class="btn btn-outline btn-sm"
+                  aria-label="Toggle optical camera QR scanner">
+                  <svg class="icon">
+                    <use href="assets/icons.svg#icon-camera"></use>
+                  </svg>
+                  <span>Camera scan</span>
+                </button>
+              </div>
+
+              <div id="camera-scan-drawer" hidden>
+                <div class="camera-viewport-wrap">
+                  <video id="camera-scan-video" class="camera-video" muted playsinline></video>
+                  <div class="camera-reticle" aria-hidden="true"></div>
+                </div>
+                <p style="font-size: 12px; color: var(--neutral-muted); margin-top: 6px;">
+                  Hold QR code inside the yellow frame. Camera stays 100% local on this device.
+                </p>
+              </div>
+            </div>
+
+            <!-- Result Panel (The Most Important Element) -->
+            <div id="result-panel" class="result-panel" aria-live="polite">
+              <!-- Dynamically populated by ui/result.js -->
+            </div>
+
+            <!-- Stat Strip (6 Cards) -->
+            <div class="stat-strip">
+              <div class="stat-card stat-card-loaded">
+                <span class="stat-label">Loaded</span>
+                <span id="stat-val-loaded" class="stat-value">0</span>
+                <span class="stat-caption">in manifest</span>
+              </div>
+              <div class="stat-card stat-card-checkedin">
+                <span class="stat-label">Checked In</span>
+                <span id="stat-val-checkedin" class="stat-value">0</span>
+                <span class="stat-caption">admitted</span>
+              </div>
+              <div class="stat-card stat-card-prechecked">
+                <span class="stat-label">Pre-Checked</span>
+                <span id="stat-val-prechecked" class="stat-value">0</span>
+                <span class="stat-caption">already checked</span>
+              </div>
+              <div class="stat-card stat-card-duplicates">
+                <span class="stat-label">Duplicates</span>
+                <span id="stat-val-duplicates" class="stat-value">0</span>
+                <span class="stat-caption">repeat scans</span>
+              </div>
+              <div class="stat-card stat-card-invalid">
+                <span class="stat-label">Invalid</span>
+                <span id="stat-val-invalid" class="stat-value">0</span>
+                <span class="stat-caption">not found</span>
+              </div>
+              <div class="stat-card stat-card-cancelled">
+                <span class="stat-label">Cancelled</span>
+                <span id="stat-val-cancelled" class="stat-value">0</span>
+                <span class="stat-caption">void orders</span>
+              </div>
+            </div>
+
+            <!-- Control Bar -->
+            <div class="control-bar card" style="padding: 12px 18px;">
+              <div class="control-group-left">
+                <label for="control-event-select" class="form-label"
+                  style="margin: 0; align-self: center;">Event</label>
+                <div class="event-select-wrapper">
+                  <select id="control-event-select" class="event-select"
+                    aria-label="Select active conference event"></select>
+                </div>
+                <button type="button" id="control-sync-btn" class="btn btn-secondary">
+                  <svg class="icon">
+                    <use href="assets/icons.svg#icon-refresh"></use>
+                  </svg>
+                  <span>Sync event</span>
+                </button>
+                <button type="button" id="control-report-btn" class="btn btn-primary">
+                  <svg class="icon">
+                    <use href="assets/icons.svg#icon-chart"></use>
+                  </svg>
+                  <span>Report</span>
+                </button>
+              </div>
+
+              <div class="control-group-right">
+                <button type="button" id="control-export-log-btn" class="btn btn-outline">
+                  <svg class="icon">
+                    <use href="assets/icons.svg#icon-download"></use>
+                  </svg>
+                  <span>Export log</span>
+                </button>
+                <button type="button" id="control-clear-btn" class="btn btn-destructive">
+                  <svg class="icon">
+                    <use href="assets/icons.svg#icon-trash"></use>
+                  </svg>
+                  <span>Clear</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================================================================
+               PANEL 2b: WALK-IN REGISTRATION
+               Captures delegates who arrive without a pre-purchased ticket.
+               Works fully offline (IndexedDB) and exports CSV for the registrar.
+               ================================================================ -->
+          <section data-panel="walkin" class="panel" hidden>
+            <div class="walkin-layout">
+
+              <!-- LEFT: the form -->
+              <div class="card walkin-form-card">
+                <div class="walkin-head">
+                  <div>
+                    <h2>Walk-in Registration</h2>
+                    <p class="walkin-sub">Register a delegate at the door. Works offline — nothing is lost if the Wi-Fi
+                      drops.</p>
+                  </div>
+                  <span id="walkin-day-badge" class="chip chip-gold">—</span>
+                </div>
+
+                <form id="walkin-form" class="walkin-form" novalidate>
+                  <div class="field">
+                    <label for="wi-name">Full name <span class="req">*</span></label>
+                    <input type="text" id="wi-name" name="name" autocomplete="off" placeholder="e.g. Thandiwe Mokoena"
+                      required>
+                    <p class="field-error" id="wi-name-error" hidden></p>
+                  </div>
+
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="wi-email">Email <span class="req">*</span></label>
+                      <input type="email" id="wi-email" name="email" autocomplete="off" placeholder="name@company.co.za"
+                        inputmode="email">
+                      <p class="field-error" id="wi-email-error" hidden></p>
+                      <label class="checkline">
+                        <input type="checkbox" id="wi-no-email" name="noEmail">
+                        <span>Delegate has no email</span>
+                      </label>
+                    </div>
+
+                    <div class="field">
+                      <label for="wi-org">Organisation</label>
+                      <input type="text" id="wi-org" name="organisation" autocomplete="off"
+                        placeholder="e.g. Acme Corp">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>Day(s) attended <span class="req">*</span></label>
+                    <div id="wi-days" class="day-grid"><!-- populated from config/events.js --></div>
+                    <p class="field-error" id="wi-days-error" hidden></p>
+                    <p class="field-hint">Tick every day this delegate is entitled to attend. A weekly pass = all five
+                      conference days.</p>
+                  </div>
+
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="wi-type">Pass type</label>
+                      <select id="wi-type">
+                        <option value="Standard Conference Daytime Pass">Standard Conference Daytime Pass</option>
+                        <option value="Full Conference (Non-residential)">Full Conference (Non-residential)</option>
+                        <option value="Residential Delegate">Residential Delegate</option>
+                        <option value="The All-Inclusive Delegate">The All-Inclusive Delegate</option>
+                        <option value="Youth Inclusion">Youth Inclusion</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="wi-amount">Amount paid (ZAR)</label>
+                      <div class="amount-row">
+                        <input type="number" id="wi-amount" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                        <label class="checkline checkline-inline">
+                          <input type="checkbox" id="wi-paid" checked>
+                          <span>Paid</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="wi-notes">Notes</label>
+                    <input type="text" id="wi-notes" placeholder="Optional — e.g. paid cash, student card seen">
+                  </div>
+
+                  <div id="walkin-form-alert" class="walkin-alert" hidden></div>
+
+                  <div class="walkin-actions">
+                    <button type="submit" class="btn btn-primary btn-lg" id="wi-submit">
+                      <svg class="icon">
+                        <use href="assets/icons.svg#icon-check-circle"></use>
+                      </svg>
+                      <span>Register &amp; admit</span>
+                    </button>
+                    <button type="reset" class="btn btn-outline" id="wi-reset">Clear</button>
+                  </div>
+                  <p class="field-hint" id="wi-hint">Press Enter to submit. The form resets for the next delegate.</p>
+                </form>
+              </div>
+
+              <!-- RIGHT: today's desk summary + recent registrations -->
+              <div class="walkin-side">
+                <div class="card walkin-stats-card">
+                  <h3>Walk-in desk</h3>
+                  <div class="walkin-stats">
+                    <div class="wi-stat"><span id="wi-stat-total">0</span><em>Total</em></div>
+                    <div class="wi-stat"><span id="wi-stat-today">0</span><em>Today</em></div>
+                    <div class="wi-stat"><span id="wi-stat-paid">0</span><em>Paid</em></div>
+                    <div class="wi-stat"><span id="wi-stat-unpaid">0</span><em>Unpaid</em></div>
+                  </div>
+                  <div class="walkin-revenue">
+                    Collected today: <strong id="wi-stat-revenue">R0.00</strong>
+                  </div>
+                  <button type="button" class="btn btn-outline btn-block" id="wi-export-btn">
+                    <svg class="icon">
+                      <use href="assets/icons.svg#icon-download"></use>
+                    </svg>
+                    <span>Export walk-ins (CSV)</span>
+                  </button>
+                </div>
+
+                <div class="card walkin-list-card">
+                  <div class="walkin-list-head">
+                    <h3>Recent walk-ins</h3>
+                    <span id="wi-list-count" class="chip chip-gold">0</span>
+                  </div>
+                  <div id="wi-list" class="walkin-list"><!-- populated by ui/walkin.js --></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================================================================
+               PANEL 2: SCAN LOG
+               ================================================================ -->
+          <section data-panel="log" class="panel" hidden>
+            <div class="card activity-card">
+              <div class="activity-header">
+                <div class="activity-title-group">
+                  <h2>Recent activity</h2>
+                  <span id="activity-count-badge" class="chip chip-gold">0 total</span>
+                </div>
+                <div class="activity-search-wrapper">
+                  <svg class="icon activity-search-icon">
+                    <use href="assets/icons.svg#icon-search"></use>
+                  </svg>
+                  <input type="search" id="activity-search-input" class="activity-search-input"
+                    placeholder="Search ticket ID, holder, order, gate or status…" aria-label="Search scan activity">
+                </div>
+              </div>
+
+              <div class="activity-filter-strip">
+                <button type="button" class="filter-chip active" data-filter="all">All</button>
+                <button type="button" class="filter-chip" data-filter="admitted">Admitted</button>
+                <button type="button" class="filter-chip" data-filter="duplicate">Duplicates</button>
+                <button type="button" class="filter-chip" data-filter="denial">Denials</button>
+              </div>
+
+              <div id="activity-list-container" class="activity-list">
+                <!-- Dynamically populated by ui/activity.js -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ================================================================
+               PANEL 3: REPORTS
+               ================================================================ -->
+          <section data-panel="reports" class="panel" hidden>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2>Operational Reports</h2>
+                <p style="color: var(--neutral-dark); font-size: 14px;">Generate executive director-ready attendance
+                  reports and scan logs.</p>
+              </div>
+              <button type="button" id="reports-panel-launch-btn" class="btn btn-primary">
+                <svg class="icon">
+                  <use href="assets/icons.svg#icon-chart"></use>
+                </svg>
+                <span>Launch Summary Report</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ================================================================
+               PANEL 4: SETTINGS
+               ================================================================ -->
+          <section data-panel="settings" class="panel" hidden>
+            <div class="card">
+              <h2 style="margin-bottom: 20px;">Validator Settings &amp; Data</h2>
+
+              <div class="settings-grid">
+                <!-- Settings Tabs Nav -->
+                <div class="settings-nav">
+                  <button type="button" class="settings-tab-btn active" data-target="settings-section-event">Event &amp;
+                    Gate</button>
+                  <button type="button" class="settings-tab-btn" data-target="settings-section-cloud">Cloud
+                    Sync</button>
+                  <button type="button" class="settings-tab-btn" data-target="settings-section-scanner">Scanner</button>
+                  <button type="button" class="settings-tab-btn" data-target="settings-section-data">Data &amp;
+                    Manifest</button>
+                </div>
+
+                <!-- Settings Content Panes -->
+                <div class="settings-content">
+                  <!-- 1. Event & Gate Section -->
+                  <div id="settings-section-event" class="settings-section">
+                    <h3>Event &amp; Gate Assignment</h3>
+
+                    <div class="form-group">
+                      <label for="settings-event-select" class="form-label">Active Conference Session</label>
+                      <select id="settings-event-select"></select>
+                      <span class="form-helper">Determines date-bound pass entitlements and time windows.</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-gate-select" class="form-label">Gate Location</label>
+                      <select id="settings-gate-select"></select>
+                      <span class="form-helper">Specifies venue entrance or registration desk for this device.</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-operator-name" class="form-label">Operator / Volunteer Name</label>
+                      <input type="text" id="settings-operator-name" placeholder="E.g. Volunteer Thabo">
+                      <span class="form-helper">Appended to audit logs and export reports.</span>
+                    </div>
+
+                    <div class="form-group"
+                      style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--neutral-light);">
+                      <label for="settings-supervisor-pin" class="form-label">Supervisor Override PIN (Optional Security
+                        Lock)</label>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="password" id="settings-supervisor-pin" inputmode="numeric"
+                          autocomplete="new-password" placeholder="Set 4–8 digit PIN" maxlength="12"
+                          style="max-width: 220px;">
+                        <button type="button" id="settings-save-pin-btn" class="btn btn-secondary btn-sm">Set
+                          PIN</button>
+                        <button type="button" id="settings-clear-pin-btn" class="btn btn-outline btn-sm">Remove
+                          PIN</button>
+                      </div>
+                      <span id="settings-pin-status" class="form-helper">No PIN set — any gate operator may record a
+                        reason-logged override.</span>
+                    </div>
+                  </div>
+
+                  <!-- 2. Cloud Sync Section -->
+                  <div id="settings-section-cloud" class="settings-section" hidden>
+                    <h3>Supabase Cloud Synchronization</h3>
+                    <p style="color: var(--neutral-dark); font-size: 14px;">
+                      Optional cross-gate deduplication. The app operates 100% offline without this.
+                    </p>
+
+                    <div class="form-group">
+                      <label for="settings-supabase-url" class="form-label">Supabase Project URL</label>
+                      <input type="url" id="settings-supabase-url" placeholder="https://xyzcompany.supabase.co">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-supabase-key" class="form-label">Supabase Anon Key</label>
+                      <div style="display: flex; gap: 8px;">
+                        <input type="password" id="settings-supabase-key"
+                          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" style="flex: 1;">
+                        <button type="button" id="settings-reveal-key-btn"
+                          class="btn btn-outline btn-sm">Reveal</button>
+                      </div>
+                      <span class="form-helper">Public anonymous key only. Never enter the service-role key in the
+                        browser.</span>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                      <button type="button" id="settings-cloud-test-btn" class="btn btn-outline">Test
+                        connection</button>
+                      <button type="button" id="settings-cloud-save-btn" class="btn btn-secondary">Save &amp;
+                        connect</button>
+                      <button type="button" id="settings-cloud-disconnect-btn"
+                        class="btn btn-destructive">Disconnect</button>
+                    </div>
+
+                    <div id="settings-cloud-status" style="font-size: 13px; font-weight: 600;"></div>
+
+                    <!-- Collapsible SQL Setup -->
+                    <details
+                      style="margin-top: 12px; border: 1px solid var(--neutral-border); padding: 12px; border-radius: var(--radius-sm);">
+                      <summary style="cursor: pointer; font-weight: 700; font-size: 13px;">First-time Supabase SQL Setup
+                        (Click to expand)</summary>
+                      <div style="margin-top: 10px;">
+                        <button type="button" id="settings-copy-sql-btn" class="btn btn-outline btn-sm"
+                          style="margin-bottom: 8px;">
+                          <svg class="icon">
+                            <use href="assets/icons.svg#icon-copy"></use>
+                          </svg>
+                          <span>Copy SQL</span>
+                        </button>
+                        <pre id="settings-supabase-sql" class="mono"
+                          style="font-size: 11px; background: var(--surface-panel); padding: 12px; max-height: 200px; overflow-y: auto; white-space: pre; border-radius: var(--radius-sm);"></pre>
+                      </div>
+                    </details>
+                  </div>
+
+                  <!-- 3. Scanner Section -->
+                  <div id="settings-section-scanner" class="settings-section" hidden>
+                    <h3>Scanner Hardware &amp; Feedback</h3>
+
+                    <div class="form-group">
+                      <label for="settings-auto-submit-ms" class="form-label">Auto-Submit Idle Window (ms)</label>
+                      <input type="number" id="settings-auto-submit-ms" min="50" max="1000" step="10">
+                      <span class="form-helper">Time to wait after last character from keyboard-wedge scanner before
+                        auto-submitting (default 120ms).</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-dup-guard-ms" class="form-label">Duplicate Scanner Double-Fire Guard
+                        (ms)</label>
+                      <input type="number" id="settings-dup-guard-ms" min="200" max="3000" step="50">
+                      <span class="form-helper">Swallows accidental rapid double-triggers of hardware beam (default
+                        700ms).</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settings-beep-volume" class="form-label">Audio Tone Volume</label>
+                      <input type="range" id="settings-beep-volume" min="0" max="1" step="0.1"
+                        style="max-width: 300px;">
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" id="settings-vibration-toggle">
+                        <span>Enable device haptic vibration on mobile/tablets</span>
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" id="settings-keep-awake-toggle">
+                        <span>Keep screen awake during validation shift (Wake Lock API)</span>
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" id="settings-lookalike-toggle">
+                        <span>Security code lookalike mapping (O→0, I→1, B→8) [Off by default]</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- 4. Data & Manifest Section -->
+                  <div id="settings-section-data" class="settings-section" hidden>
+                    <h3>Data Management &amp; Manifest CSV</h3>
+
+                    <div class="form-group">
+                      <label class="form-label" for="manifest-source-select">Which ticketing/payment source is this file
+                        from?</label>
+                      <select id="manifest-source-select" class="form-select"
+                        style="width:100%; padding:10px 12px; border:1.5px solid var(--neutral-border); border-radius: var(--radius-sm); background: var(--surface-card); font-size:14px; margin-bottom:10px;">
+                        <option value="">Auto-detect (recommended)</option>
+                        <option value="event_tickets">Event Tickets Plus export</option>
+                        <option value="woocommerce">WooCommerce export</option>
+                        <option value="paypal">PayPal export</option>
+                        <option value="generic">Other / manual CSV</option>
+                      </select>
+                      <p style="font-size:12px; color: var(--neutral-muted); margin:0 0 10px;">
+                        Imports are <strong>merged</strong> — load the Event Tickets Plus attendee export and the PayPal
+                        export
+                        in any order; both are kept.
+                      </p>
+                      <p style="font-size:12px; color: var(--neutral-muted); margin:0 0 10px;">
+                        Only the five conference passes count as conference delegates. Tours, merchandise and
+                        event-specific tickets are tracked separately; Storytelling Dinner tickets work only at their
+                        event.
+                      </p>
+
+                      <div id="manifest-drop-zone" role="button" tabindex="0"
+                        style="border: 2px dashed var(--neutral-border); padding: 24px; text-align: center; border-radius: var(--radius-sm); background: var(--surface-panel); cursor: pointer;">
+                        <svg class="icon"
+                          style="width: 32px; height: 32px; color: var(--neutral-muted); margin-bottom: 8px;">
+                          <use href="assets/icons.svg#icon-download"></use>
+                        </svg>
+                        <div style="font-weight: 700; margin-bottom: 4px;">Drag and drop manifest CSV here, or click to
+                          browse</div>
+                        <div style="font-size: 12px; color: var(--neutral-muted);">Event Tickets Plus, PayPal and the
+                          canonical AAD template — you can load several files</div>
+                      </div>
+                      <input type="file" id="manifest-file-input" accept=".csv" style="display: none;">
+                    </div>
+
+                    <div id="manifest-import-summary"></div>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                      <button type="button" id="settings-load-sample-btn" class="btn btn-secondary">
+                        <svg class="icon">
+                          <use href="assets/icons.svg#icon-database"></use>
+                        </svg>
+                        <span>Load Sample Manifest (40 Tickets)</span>
+                      </button>
+                      <button type="button" id="settings-export-log-btn" class="btn btn-outline">
+                        <svg class="icon">
+                          <use href="assets/icons.svg#icon-download"></use>
+                        </svg>
+                        <span>Export Scan Log</span>
+                      </button>
+                      <button type="button" id="settings-clear-session-btn" class="btn btn-destructive">
+                        <svg class="icon">
+                          <use href="assets/icons.svg#icon-trash"></use>
+                        </svg>
+                        <span>Clear Session Counts</span>
+                      </button>
+                      <button type="button" id="settings-purge-device-btn" class="btn btn-destructive"
+                        title="POPIA post-conference wipe: erase all manifests, logs, walk-ins, and cloud keys from this device">
+                        <svg class="icon">
+                          <use href="assets/icons.svg#icon-lock"></use>
+                        </svg>
+                        <span>Purge All Device Data (POPIA)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- 5. Mobile Fixed Bottom Tab Bar (<1024px) -->
+    <nav class="mobile-tab-bar" aria-label="Mobile navigation">
+      <button type="button" class="mobile-tab-item active" data-target="validator">
+        <svg class="icon">
+          <use href="assets/icons.svg#icon-scan"></use>
+        </svg>
+        <span>Validator</span>
+      </button>
+      <button type="button" class="mobile-tab-item" data-target="log">
+        <svg class="icon">
+          <use href="assets/icons.svg#icon-list"></use>
+        </svg>
+        <span>Scan Log</span>
+      </button>
+      <button type="button" class="mobile-tab-item" data-target="walkin">
+        <svg class="icon">
+          <use href="assets/icons.svg#icon-user"></use>
+        </svg>
+        <span>Walk-ins</span>
+      </button>
+      <button type="button" class="mobile-tab-item" data-target="reports">
+        <svg class="icon">
+          <use href="assets/icons.svg#icon-chart"></use>
+        </svg>
+        <span>Reports</span>
+      </button>
+      <button type="button" class="mobile-tab-item" data-target="settings">
+        <svg class="icon">
+          <use href="assets/icons.svg#icon-settings"></use>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================================================================
+       NATIVE DIALOGS
+       ================================================================ -->
+
+  <!-- Summary Report Dialog -->
+  <dialog id="report-dialog" aria-labelledby="report-dialog-title">
+    <div class="dialog-shell">
+      <div class="dialog-header">
+        <div>
+          <h2 id="report-dialog-title">Summary report</h2>
+          <p id="report-header-meta" style="font-size: 13px; color: var(--neutral-dark); margin-top: 2px;"></p>
+        </div>
+        <button type="button" id="report-dialog-x-btn" class="icon-btn no-print" aria-label="Close dialog">
+          <svg class="icon" style="color: var(--neutral-darkest);">
+            <use href="assets/icons.svg#icon-x"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div id="report-dialog-body" class="dialog-body">
+        <!-- Rendered by ui/report-modal.js -->
+      </div>
+
+      <div class="dialog-footer no-print">
+        <button type="button" id="report-print-btn" class="btn btn-outline">
+          <svg class="icon">
+            <use href="assets/icons.svg#icon-printer"></use>
+          </svg>
+          <span>Print</span>
+        </button>
+        <button type="button" id="report-export-csv-btn" class="btn btn-primary">
+          <svg class="icon">
+            <use href="assets/icons.svg#icon-download"></use>
+          </svg>
+          <span>Export CSV</span>
+        </button>
+        <button type="button" id="report-close-btn" class="btn btn-outline">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Activity Detail Dialog -->
+  <dialog id="detail-dialog" aria-labelledby="detail-dialog-title">
+    <div class="dialog-shell">
+      <div class="dialog-header">
+        <h2 id="detail-dialog-title">Scan Record Details</h2>
+        <button type="button" id="detail-dialog-x-btn" class="icon-btn" aria-label="Close dialog">
+          <svg class="icon" style="color: var(--neutral-darkest);">
+            <use href="assets/icons.svg#icon-x"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div id="detail-dialog-body" class="dialog-body"></div>
+
+      <div class="dialog-footer">
+        <button type="button" id="detail-copy-id-btn" class="btn btn-outline">
+          <svg class="icon">
+            <use href="assets/icons.svg#icon-copy"></use>
+          </svg>
+          <span>Copy Ticket ID</span>
+        </button>
+        <button type="button" id="detail-copy-json-btn" class="btn btn-outline">
+          <svg class="icon">
+            <use href="assets/icons.svg#icon-copy"></use>
+          </svg>
+          <span>Copy Row as JSON</span>
+        </button>
+        <button type="button" id="detail-close-btn" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Vendored QR encoder (MIT, local file — no CDN, works offline) -->
+  <script src="vendor/qrcode.js"></script>
+
+  <!-- ES Module Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

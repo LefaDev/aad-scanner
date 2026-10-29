@@ -1,0 +1,9 @@
+# Block public HTTP access to repo-level agent rules, skills, and QA tests
+# since this zero-build PWA publishes from the repository root (".").
+/.agents/*    /index.html   404!
+/.agent/*     /index.html   404!
+/tests/*      /index.html   404!
+/docs/*       /index.html   404!
+/AGENTS.md    /index.html   404!
+/GEMINI.md    /index.html   404!
+/netlify.toml /index.html   404!

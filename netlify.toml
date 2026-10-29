@@ -1,0 +1,6 @@
+[build]
+  publish = "."
+  command = "node --test tests/gate-validator.test.mjs"
+
+
+# Security & SW headers are also defined in _headers for Netlify Drop compatibility.

@@ -1,0 +1,17 @@
+# Environment & Credentials (NEVER publish to static Netlify root)
+.env
+.env.*
+*.pem
+*.key
+
+# Google Antigravity local/sensitive workspace configs
+# Keep MCP tokens in ~/.gemini/config/mcp_config.json (Global), NEVER in repo!
+.agents/mcp_config.json
+.agent/mcp_config.json
+*.bak
+
+# Dependencies & OS / Editor noise
+node_modules/
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,158 @@
+/* ==========================================================================
+   AAD 2026 GATE VALIDATOR — PRINT STYLESHEET
+   A4 portrait, 16mm margins, clean executive layout for conference director
+   ========================================================================== */
+
+@page {
+  size: A4 portrait;
+  margin: 16mm;
+}
+
+@media print {
+  *, *::before, *::after {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #2b2c26 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Hide interactive chrome */
+  .announcement-strip,
+  .app-header,
+  .app-sidebar,
+  .mobile-tab-bar,
+  .scan-card,
+  .stat-strip,
+  .control-bar,
+  .activity-card,
+  .toast-container,
+  .dialog-footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Show dialog as standard page content */
+  dialog {
+    display: block !important;
+    position: static !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    background: transparent !important;
+  }
+
+  dialog::backdrop {
+    display: none !important;
+  }
+
+  .dialog-shell {
+    max-height: none !important;
+  }
+
+  .dialog-body {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  /* Print Header with Logo Badge */
+  .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #fac80f;
+    padding-bottom: 12pt;
+    margin-bottom: 16pt;
+  }
+
+  .print-logo-badge {
+    background-color: #2b2c26 !important;
+    padding: 8px 14px;
+    display: inline-block;
+  }
+
+  .print-logo-badge img {
+    height: 38px;
+    width: auto;
+  }
+
+  .print-header-meta {
+    text-align: right;
+  }
+
+  .print-header-meta h1 {
+    font-size: 16pt !important;
+    color: #154a58 !important;
+    margin: 0 !important;
+  }
+
+  .print-header-meta p {
+    font-size: 9pt !important;
+    color: #575652 !important;
+    margin: 2pt 0 0 0 !important;
+  }
+
+  /* Section cards without shadows */
+  .card,
+  .report-headline-card {
+    border: 1px solid #acacaa !important;
+    background: #ffffff !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 12pt;
+    padding: 10pt !important;
+  }
+
+  .report-headline-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10pt !important;
+    margin-bottom: 14pt !important;
+  }
+
+  .report-headline-num {
+    font-size: 20pt !important;
+    color: #154a58 !important;
+  }
+
+  .report-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+  }
+
+  .report-table th,
+  .report-table td {
+    border-bottom: 1px solid #acacaa !important;
+    padding: 6pt 8pt !important;
+  }
+
+  .report-table th {
+    background-color: #f4f4f2 !important;
+    color: #2b2c26 !important;
+    font-weight: 700 !important;
+  }
+
+  .chart-container svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .print-footer-note {
+    display: block !important;
+    margin-top: 16pt;
+    padding-top: 8pt;
+    border-top: 1px solid #acacaa;
+    font-size: 8pt;
+    color: #81817f;
+    text-align: center;
+  }
+}

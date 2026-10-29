@@ -1,0 +1,108 @@
+/* ==========================================================================
+   AAD 2026 GATE VALIDATOR — TOKENS
+   Brand system, color palette, typography and geometry tokens
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/roboto-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/roboto-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/roboto-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('../assets/fonts/roboto-900.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-sans-600.woff2') format('woff2');
+}
+
+:root {
+  /* AAD structural colours */
+  --color-primary:      #154a58;  /* deep teal — headers, panels, primary text */
+  --color-highlight:    #fac80f;  /* vibrant gold — CTAs, active states, accent rules */
+  --color-accent-warm:  #cb8626;  /* warm ochre — warnings, hover, secondary accents */
+  --color-accent-red:   #e23a21;  /* terracotta red — denials, destructive actions */
+
+  /* AAD neutral scale (the only neutrals permitted) */
+  --neutral-darkest:    #2b2c26;
+  --neutral-dark:       #575652;
+  --neutral-muted:      #81817f;
+  --neutral-border:     #acacaa;
+  --neutral-light:      #d5d5d3;
+
+  /* Surfaces */
+  --surface-page:       #ffffff;
+  --surface-card:       #ffffff;
+  --surface-panel:      #f4f4f2;   /* light neutral wash */
+  --surface-header:     #2d2c27;   /* AAD site header charcoal */
+  --surface-announcement: #fac80f;
+
+  /* Semantic scan states */
+  --status-valid:       #1e6b4f;  --status-valid-bg:   #e9f2ed;
+  --status-prechecked:  #8a5a17;  --status-prechecked-bg: #faf3e2;
+  --status-duplicate:   #c0341d;  --status-duplicate-bg: #fbece9;
+  --status-invalid:     #c0341d;  --status-invalid-bg:  #fbece9;
+  --status-cancelled:   #2b2c26;  --status-cancelled-bg:#f0f0ee;
+
+  /* Typography */
+  --font-heading: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:    'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-btn:     'Nunito Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'SF Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+
+  /* Geometry — AAD is a square, editorial brand */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-pill: 9999px;
+  --border-hairline: 1px solid var(--neutral-border);
+  --focus-ring: 3px solid var(--color-highlight);
+  --shadow-card: 0 1px 2px rgba(43,44,38,.06), 0 8px 24px rgba(43,44,38,.06);
+  --shadow-modal: 0 10px 40px rgba(43,44,38,.24);
+  --max-width: 1200px;
+  --header-height: 76px;
+  --announcement-height: 40px;
+  --sidebar-width: 264px;
+  --tabbar-height: 64px;
+
+  /* Spacing Scale */
+  --space-2xs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* Transitions */
+  --trans-fast: 120ms ease-out;
+  --trans-med: 180ms ease-out;
+  --trans-slow: 220ms ease-out;
+}
+
